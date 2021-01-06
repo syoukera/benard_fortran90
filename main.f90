@@ -10,10 +10,10 @@ program main
     ! Chapter 1, paramenters and control indices
     integer :: niter = 0
     ! program control and monitor
-    integer :: maxit = 100
+    integer :: maxit = 1000
     integer :: imon = 5
     integer :: jmon = 5
-    real(16) :: sormax = 1.0e-3
+    real(16) :: sormax = 1.0e-1
     real(16) :: sorce
 
     integer :: i, j

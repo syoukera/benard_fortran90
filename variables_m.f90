@@ -1,6 +1,6 @@
 module params
     ! Length of variable array
-    integer, parameter :: nx = 12
+    integer, parameter :: nx = 52
     integer, parameter :: ny = 12
 
     ! module all
@@ -24,22 +24,22 @@ module params
     ! S means small?
     ! SEWU is dx at e and u defined in X (NOT XU)
     integer :: nswpu = 2
-    real(16) :: urfu = 0.5
+    real(16) :: urfu = 0.4
     real(16) :: resoru, DXEPU(nx), DXPWU(nx), SEWU(nx)
 
     ! module vvel
     ! Y-direction velocity = V
     ! nswpv means the number fo iteration?
     integer :: nswpv = 2
-    real(16) :: urfv = 0.5
+    real(16) :: urfv = 0.4
     real(16) :: resorv, DYNPV(ny), DYPSV(ny), SNSV(ny)
 
     ! module pcor
     ! Unknown
-    integer :: nswpp = 3
+    integer :: nswpp = 10
     integer :: ipref = 2
     integer :: jpref = 2
-    real(16) :: urfp = 0.8
+    real(16) :: urfp = 0.4
     real(16) :: resorm, DU(nx, ny), DV(nx, ny)
 
     ! module var
@@ -50,7 +50,11 @@ module params
     ! module fluid
     ! Parameter which is constant in the field
     real(16) :: viscos = 1.0e-3
-    real(16) :: densit = 1000.0
+    real(16) :: densit = 998.2
+    real(16) :: gravit = 9.8
+    real(16) :: sph    = 4.1816d03
+    real(16) :: tcn    = 0.594
+    real(16) :: beta   = 0.207d-3
 
     ! module coef
     ! Direction (N-S-E-W) related coefficients
@@ -63,6 +67,19 @@ module params
     ! module cavsiz
     ! Boundary values
     real(16) :: xmax = 1.0
-    real(16) :: ymax = 1.0
-    real(16) :: uwall = 1.0e-4
+    real(16) :: ymax = 0.1
+    ! real(16) :: uwall = 1.0e-4
+
+    real(16) :: resort
+    real(16) :: urft = 0.4
+    real(16) :: T(nx, ny)
+    integer :: nswpt = 4
+
+    real(16) :: ra = 1000.0
+
+    real(16) :: vmax = 1.0d-5
+    real(16) :: tnorth = 0.0 
+    real(16) :: tsouth = tnorth + ra*tct*(viscos/densit) &
+                                  /(beta*grabit*vmax**3)
+
 end module params
