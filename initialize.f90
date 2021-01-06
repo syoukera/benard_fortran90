@@ -41,6 +41,8 @@ subroutine init()
     
     integer :: i, j
 
+    tsouth = tnorth + ra*tcn*(viscos/densit) / (beta*gravit*vmax**3)
+
     ! Assign dx value
     DXPW(1) = 0.0
     DXEP(ni) = 0.0
