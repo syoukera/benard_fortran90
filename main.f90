@@ -50,7 +50,7 @@ program main
         resorv = resorv/xmonin
         resort = resort/tin
 
-        print '(i3, 6(E10.2))', niter, resoru, resorv, resorm, resort, &
+        print '(i3, 8(E10.2))', niter, resoru, resorv, resorm, resort, &
                 U(imon, jmon), V(imon, jmon), P(imon, jmon), T(imon, jmon)
 
         ! termination tests

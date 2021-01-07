@@ -108,6 +108,8 @@ subroutine calcv()
             AW(i, j) = AMAX1(ABS(0.5*cw), dw) + 0.5*cw
             DV(i, j) = SEW(i)
             SU(i, j) = DV(i, j)*(P(i, j-1) - P(i, j))
+            SU(i, j) = SU(i, j) + densit*gravit*SNSV(j)*DV(i, j) &
+                      *(0.5*(T(i, j) + T(i, j-1))-tnorth)*beta
             SP(i, j) = 0.0
         end do
     end do
@@ -222,6 +224,86 @@ subroutine calcp()
     end do
 
 end subroutine calcp
+
+subroutine calct()
+    use params
+    implicit none
+
+    integer :: i, j, n
+    real(16) :: gn, gs, ge, gw
+    real(16) :: cn, cs, ce, cw, dn, ds, de, dw
+    real(16) :: xp, tmult, resor
+
+    ! Chapter 1, assembly of coefficients
+    do i = 2, nim1
+        do j = 2, njm1
+            ! convection coefficients
+            gn = densit*sph*V(i, j+1)
+            gs = densit*sph*V(i, j)
+            ge = densit*sph*V(i+1, j)
+            gw = densit*sph*V(i, j)
+
+            cn = gn*SEW(i)
+            cs = gs*SEW(i)
+            ce = ge*SNS(i)
+            cw = gw*SNS(i)
+
+            dn = tcn*SEW(i)/DYNP(j)
+            ds = tcn*SEW(i)/DYPS(j)
+            de = tcn*SNS(i)/DXEP(j)
+            dw = tcn*SNS(i)/DXPW(j)
+
+            ! assemble
+            AN(i, j) = DMAX1(ABS(0.5*cn), dn) - 0.5*cn
+            AS(i, j) = DMAX1(ABS(0.5*cs), ds) + 0.5*cs
+            AE(i, j) = DMAX1(ABS(0.5*ce), de) - 0.5*ce
+            AW(i, j) = DMAX1(ABS(0.5*cw), dw) + 0.5*cw
+            SU(i, j) = 0.0
+            SP(i, j) = 0.0
+        end do
+    end do
+
+    ! north
+    do i = 1, ni
+        T(i, nj) = tnorth
+    end do
+
+    ! south
+    do i = 1, ni
+        T(i, 1) = tsouth
+    end do
+
+    ! east
+    do j = 2, nj-1
+        T(ni, j) = T(nim1, j)
+    end do
+
+    ! west
+    do j = 2, nj-1
+        T(1, j) = T(2, j)
+    end do
+    
+    ! Chapter 3, final coef
+    resort = 0.0
+    do i = 2, nim1
+        do j = 2, njm1
+            AP(i, j) = AN(i, j) + AS(i, j) + AE(i, j) + AW(i, j) - SP(i, j)
+            resor    = AN(i, j)*T(i, j+1) + AS(i, j)*T(i, j-1) & 
+                     + AE(i, j)*T(i+1, j) + AW(i, j)*T(i-1, j) &
+                     - AP(i, j)*T(i, j) + SU(i, j)
+            resort = resort + abs(resor)
+            ! under relaxation
+            AP(i, j) = AP(i, j)/urft
+            SU(i, j) = SU(i, j) + (1.-urft)*AP(i, j)*T(i, j)
+        end do
+    end do    
+    
+    ! Chapter 4, Solution of difference equations
+    do n = 1, nswpv
+        call lisolv(2, 2, ni, nj, T)
+    end do
+
+end subroutine calct
 
 subroutine lisolv(istart, jstart, ni, nj, PHI)
     use params, only: nx, ny, AP, AN, AS, AE, AW, SU, SP
