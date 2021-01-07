@@ -78,6 +78,7 @@ module params
     real(16) :: ra = 1000.0
 
     real(16) :: vmax = 1.0d-5
+    real(16) :: vmax1
     real(16) :: tnorth = 0.0 
     real(16) :: tsouth = 0.0
 

@@ -17,20 +17,13 @@ program main
     real(16) :: sorce
 
     integer :: i, j
-    real(16) :: arden, flowin, xmonin
+    real(16) :: arden, flowin, xmonin, tin
 
     ! Chapter 2, initial operations
     call grid
     call init
     flowin = 0.0
     xmonin = 0.0
-    ! calculate residuals
-    do j = 2, njm1
-        arden = densit*sns(j)
-        flowin = flowin + arden*uwall
-        xmonin = xmonin + arden*uwall*uwall
-    end do
-    ! print *, imon, jmon
 
     ! Chapter 3, iteration loop
     sorce = 1.0e10
@@ -39,13 +32,29 @@ program main
         call calcu
         call calcv
         call calcp
+        call calct
+
+        flowin = 0.0
+        xmonin = 0.0
+        tin    = 0.0
+        if (vmax .LT. vmax1) vmax = vmax1
+        do i = 2, nim1
+            arden = densit*sew(i)
+            flowin = flowin + arden*vmax
+            xmonin = xmonin + arden*vmax*vmax
+            tin = tin + arden*vmax*sph*(tsouth-tnorth)
+        end do
+
         resorm = resorm/flowin
         resoru = resoru/xmonin
         resorv = resorv/xmonin
-        print '(i3, 6(E10.2))', niter, resoru, resorv, resorm, U(imon, jmon), &
-                 V(imon, jmon), P(imon, jmon)
+        resort = resort/tin
+
+        print '(i3, 6(E10.2))', niter, resoru, resorv, resorm, resort, &
+                U(imon, jmon), V(imon, jmon), P(imon, jmon), T(imon, jmon)
+
         ! termination tests
-        sorce = amax1(resorm, resoru, resorv)
+        sorce = amax1(resorm, resoru, resorv, resort)
         if (niter .EQ. 20 .AND. sorce .GT. 1.0e7*sormax) then
             print *, 'Solution diverges or needs more iterations'
             stop
@@ -59,8 +68,8 @@ program main
 
     do i = 1, ni
         do j = 1, nj
-            write(10, *) X(i), Y(j), U(i, j), V(i, j), P(i, j) 
+            write(10, *) X(i), Y(j), U(i, j), V(i, j), P(i, j), T(i, j) 
         end do
     end do
-    
+
 end program main

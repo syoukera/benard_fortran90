@@ -42,6 +42,7 @@ subroutine init()
     integer :: i, j
 
     tsouth = tnorth + ra*tcn*(viscos/densit) / (beta*gravit*vmax**3)
+    vmax1 = vmax
 
     ! Assign dx value
     DXPW(1) = 0.0
@@ -132,13 +133,10 @@ subroutine init()
             V(i, j) = 0.0
             P(i, j) = 0.0
             PP(i, j) = 0.0
+            T(i, j) = tsouth
             SU(i, j) = 0.0
             SP(i, j) = 0.0
         end do
-    end do
-
-    do i = 1, ni
-        U(i, nj) = uwall
     end do
 
     do i = 1, ni
