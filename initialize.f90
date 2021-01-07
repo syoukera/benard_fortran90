@@ -40,8 +40,8 @@ subroutine init()
     implicit none
     
     integer :: i, j
-
-    tsouth = tnorth + ra*tcn*(viscos/densit) / (beta*gravit*vmax**3)
+    
+    tsouth = tnorth + ra/beta/gravit/ymax**3*tcn/sph/densit*viscos/densit
     vmax1 = vmax
 
     ! Assign dx value
