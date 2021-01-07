@@ -75,7 +75,7 @@ module params
     real(16) :: T(nx, ny)
     integer :: nswpt = 4
 
-    real(16) :: ra = 1000.0
+    real(16) :: ra = 2000.0
 
     real(16) :: vmax = 1.0d-5
     real(16) :: vmax1
